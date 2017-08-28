@@ -1,0 +1,94 @@
+'use strict';
+
+
+/**
+  * The functions below accept general and/or specific parameters:
+  * - hiring:      the hiring itself.
+  * - otherFields: the fields from the hiring.
+  *
+  * One of the two must be provided. The hiring properties will override
+  * the specific parameters.
+  */
+
+
+function getHiringValue(hiring, hiringValue) {
+	if(hiring) {
+		hiringValue = hiringValue || hiring.value || 0;
+	}
+
+	return hiringValue;
+}
+
+function getHiringValueWithTax(hiring, hiringValue, hiringTaxValue) {
+	if(hiring) {
+		hiringTaxValue = hiringTaxValue || hiring.tax_value || 0;
+	}
+
+	return getHiringValue(hiring, hiringValue) + hiringTaxValue;
+}
+
+
+function getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
+	if(hiring) {
+		jobName = jobName || (hiring.job && hiring.job.name);
+		jobRefund = jobRefund || (hiring.job && hiring.job.refund);
+
+		var candidate = getCorrespondentFromCandidates(hiring.candidates);
+		candidateRefund = candidateRefund || (candidate && candidate.refund);
+		candidateAttachments = candidateAttachments || (candidate && candidate.attachments);
+	}
+
+	// general refund value.
+	var generalRefundValue = candidateRefund.value || 0;
+
+	// copy refund value (in case of copy services).
+	var copyRefundValue = 0;
+	if(jobName === 'Cópia' && jobRefund.pay_sheets) {
+		var pageCount = 0;
+		if(candidateRefund.pageCount !== undefined) {
+			pageCount = candidateRefund.pageCount;
+		} else {
+			pageCount = countAttachmentsPageCount(candidateAttachments);
+		}
+
+		copyRefundValue = (candidateRefund.value_per_sheets || 0.2) * pageCount;
+	}
+
+	return generalRefundValue + copyRefundValue;
+}
+
+
+function getHiringTotalValue(hiring, hiringValue, jobName, jobRefund, candidateRefund, candidateAttachments) {
+	return getHiringValue(hiring, hiringValue) +
+		getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments);
+}
+
+function getHiringTotalValueWithTax(hiring, hiringValue, hiringTaxValue, jobName, jobRefund, candidateRefund, candidateAttachments) {
+	return getHiringValueWithTax(hiring, hiringValue, hiringTaxValue) +
+		getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments);
+}
+
+
+// Useful functions.
+
+
+function getCorrespondentFromCandidates(candidates) {
+	return (candidates || []).filter(function(candidate) {
+		return [ 'cancelled', 'rejected', 'notSent' ].indexOf(candidate.stage) === -1;
+	})[0];
+}
+
+function countAttachmentsPageCount(attachments) {
+	return (attachments || []).reduce(function(prev, attachment) {
+		return prev + (attachment.pageCount || 0);
+	}, 0);
+}
+
+
+module.exports = {
+	getHiringValue:             getHiringValue,
+	getHiringValueWithTax:      getHiringValueWithTax,
+	getHiringRefundValue:       getHiringRefundValue,
+	getHiringTotalValue:        getHiringTotalValue,
+	getHiringTotalValueWithTax: getHiringTotalValueWithTax
+};
