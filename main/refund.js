@@ -106,7 +106,7 @@ function getCorrespondentFromCandidates(candidates) {
 
 function countAttachmentsPageCount(attachments) {
 	return (attachments || []).reduce(function(prev, attachment) {
-		return prev + (attachment.pageCount || 0);
+		return prev + (attachment.pageCount || 0) * (attachment.refundable !== false);
 	}, 0);
 }
 
