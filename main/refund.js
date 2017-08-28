@@ -11,6 +11,8 @@
   */
 
 
+
+// get hiring value
 function getHiringValue(hiring, hiringValue) {
 	if(hiring) {
 		hiringValue = hiringValue || hiring.value || 0;
@@ -19,16 +21,33 @@ function getHiringValue(hiring, hiringValue) {
 	return hiringValue;
 }
 
-function getHiringValueWithTax(hiring, hiringValue, hiringTaxValue) {
+// get hiring tax value
+function getHiringTaxValue(hiring, hiringTaxValue) {
 	if(hiring) {
 		hiringTaxValue = hiringTaxValue || hiring.tax_value || 0;
 	}
 
-	return getHiringValue(hiring, hiringValue) + hiringTaxValue;
+	return hiringTaxValue;
+}
+
+// get hiring value with tax
+function getHiringValueWithTax(hiring, hiringValue, hiringTaxValue) {
+	return getHiringValue(hiring, hiringValue) + 
+		getHiringTaxValue(hiring, hiringTaxValue);
 }
 
 
-function getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
+
+function getHiringGeneralRefundValue(hiring, candidateRefund) {
+	if(hiring) {
+		var candidate = getCorrespondentFromCandidates(hiring.candidates);
+		candidateRefund = candidateRefund || (candidate && candidate.refund);
+	}
+
+	return candidateRefund.value;
+}
+
+function getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
 	if(hiring) {
 		jobName = jobName || (hiring.job && hiring.job.name);
 		jobRefund = jobRefund || (hiring.job && hiring.job.refund);
@@ -37,9 +56,6 @@ function getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candi
 		candidateRefund = candidateRefund || (candidate && candidate.refund);
 		candidateAttachments = candidateAttachments || (candidate && candidate.attachments);
 	}
-
-	// general refund value.
-	var generalRefundValue = candidateRefund.value || 0;
 
 	// copy refund value (in case of copy services).
 	var copyRefundValue = 0;
@@ -54,8 +70,14 @@ function getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candi
 		copyRefundValue = (candidateRefund.value_per_sheets || 0.2) * pageCount;
 	}
 
-	return generalRefundValue + copyRefundValue;
+	return copyRefundValue;
 }
+
+function getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
+	return getHiringGeneralRefundValue(hiring, candidateRefund) +
+		getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments);
+}
+
 
 
 function getHiringTotalValue(hiring, hiringValue, jobName, jobRefund, candidateRefund, candidateAttachments) {
@@ -69,11 +91,15 @@ function getHiringTotalValueWithTax(hiring, hiringValue, hiringTaxValue, jobName
 }
 
 
+
 // Useful functions.
 
-
 function getCorrespondentFromCandidates(candidates) {
-	return (candidates || []).filter(function(candidate) {
+	if(!Array.isArray(candidates)) {
+		return candidates;
+	}
+
+	return candidates.filter(function(candidate) {
 		return [ 'cancelled', 'rejected', 'notSent' ].indexOf(candidate.stage) === -1;
 	})[0];
 }
@@ -86,9 +112,14 @@ function countAttachmentsPageCount(attachments) {
 
 
 module.exports = {
-	getHiringValue:             getHiringValue,
-	getHiringValueWithTax:      getHiringValueWithTax,
-	getHiringRefundValue:       getHiringRefundValue,
+	getHiringValue:        getHiringValue,
+	getHiringTaxValue:     getHiringTaxValue,
+	getHiringValueWithTax: getHiringValueWithTax,
+
+	getHiringGeneralRefundValue: getHiringGeneralRefundValue,
+	getHiringCopyRefundValue:    getHiringCopyRefundValue,
+	getHiringRefundValue:        getHiringRefundValue,
+
 	getHiringTotalValue:        getHiringTotalValue,
 	getHiringTotalValueWithTax: getHiringTotalValueWithTax
 };
