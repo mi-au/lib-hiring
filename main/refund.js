@@ -6,8 +6,8 @@
   * - hiring:      the hiring itself.
   * - otherFields: the fields from the hiring.
   *
-  * One of the two must be provided. The hiring properties will override
-  * the specific parameters.
+  * One of the two must be provided. The specific parameters will override
+  * the hiring properties.
   */
 
 
@@ -64,7 +64,7 @@ function getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, c
 		if(candidateRefund.pageCount !== undefined) {
 			pageCount = candidateRefund.pageCount;
 		} else {
-			pageCount = countAttachmentsPageCount(candidateAttachments);
+			pageCount = countAttachmentsPages(candidateAttachments);
 		}
 
 		copyRefundValue = (candidateRefund.value_per_sheets || 0.2) * pageCount;
@@ -104,7 +104,7 @@ function getCorrespondentFromCandidates(candidates) {
 	})[0];
 }
 
-function countAttachmentsPageCount(attachments) {
+function countAttachmentsPages(attachments) {
 	return (attachments || []).reduce(function(prev, attachment) {
 		return prev + (attachment.pageCount || 0) * (attachment.refundable !== false);
 	}, 0);
@@ -121,5 +121,7 @@ module.exports = {
 	getHiringRefundValue:        getHiringRefundValue,
 
 	getHiringTotalValue:        getHiringTotalValue,
-	getHiringTotalValueWithTax: getHiringTotalValueWithTax
+	getHiringTotalValueWithTax: getHiringTotalValueWithTax,
+
+	countAttachmentsPages: countAttachmentsPages
 };
