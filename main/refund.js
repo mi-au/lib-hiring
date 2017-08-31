@@ -44,7 +44,7 @@ function getHiringGeneralRefundValue(hiring, candidateRefund) {
 		candidateRefund = candidateRefund || (candidate && candidate.refund);
 	}
 
-	return candidateRefund.value;
+	return (candidateRefund && candidateRefund.value) || 0;
 }
 
 function getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
