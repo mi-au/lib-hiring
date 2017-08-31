@@ -59,7 +59,7 @@ function getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, c
 
 	// copy refund value (in case of copy services).
 	var copyRefundValue = 0;
-	if(jobName === 'Cópia' && jobRefund.pay_sheets) {
+	if(jobName === 'Cópia' && jobRefund && jobRefund.pay_sheets) {
 		var pageCount = 0;
 		if(candidateRefund.pageCount !== undefined) {
 			pageCount = candidateRefund.pageCount;
