@@ -60,14 +60,24 @@ function getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, c
 	// copy refund value (in case of copy services).
 	var copyRefundValue = 0;
 	if(jobName === 'Cópia' && jobRefund && jobRefund.pay_sheets) {
+
 		var pageCount = 0;
 		if(candidateRefund.pageCount !== undefined) {
 			pageCount = candidateRefund.pageCount;
+		} else if(candidateRefund.enablePageCount !== undefined){
+			pageCount = candidateRefund.enablePageCount;
 		} else {
 			pageCount = countAttachmentsPages(candidateAttachments);
 		}
 
-		copyRefundValue = (candidateRefund.value_per_sheets || 0.2) * pageCount;
+		let
+			value_per_sheet = candidateRefund.value_per_sheets;
+
+		if(candidateRefund.suggested_tax !== undefined && candidateRefund.suggested_tax > 0){
+			value_per_sheet += candidateRefund.suggested_tax;
+		}
+
+		copyRefundValue = (value_per_sheet || 0.2) * pageCount;
 	}
 
 	return copyRefundValue;

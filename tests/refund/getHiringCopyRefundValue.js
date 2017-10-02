@@ -122,4 +122,40 @@ module.exports = describe('getHiringCopyRefundValue', function() {
 		done();
 	});
 
+
+	it('should apply tax on refund per sheet', function(done) {
+		var jobName   = 'Cópia',
+			jobRefund = {
+				pay_sheets: true
+			},
+			candidateRefund = {
+				value:            12,
+				pageCount:        2,
+				value_per_sheets: 0.4,
+				suggested_tax: 0.1
+			};
+
+		expect(hiringLib.refund.getHiringCopyRefundValue(null, jobName, jobRefund, candidateRefund)).to.be.eq(1);
+
+		done();
+	});
+
+
+	it('should get value enabled pageCount', function(done) {
+		var jobName   = 'Cópia',
+			jobRefund = {
+				pay_sheets: true
+			},
+			candidateRefund = {
+				value:            	12,
+				enablePageCount:  	1,
+				value_per_sheets: 	0.4,
+				suggested_tax: 		0.1
+			};
+
+		expect(hiringLib.refund.getHiringCopyRefundValue(null, jobName, jobRefund, candidateRefund)).to.be.eq(0.5);
+
+		done();
+	});
+
 });
