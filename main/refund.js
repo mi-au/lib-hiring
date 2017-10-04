@@ -8,6 +8,8 @@
   *
   * One of the two must be provided. The specific parameters will override
   * the hiring properties.
+  *
+  * See "lib-hiring refund" on google drive.
   */
 
 
@@ -60,24 +62,16 @@ function getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, c
 	// copy refund value (in case of copy services).
 	var copyRefundValue = 0;
 	if(jobName === 'Cópia' && jobRefund && jobRefund.pay_sheets) {
-
 		var pageCount = 0;
 		if(candidateRefund.pageCount !== undefined) {
 			pageCount = candidateRefund.pageCount;
-		} else if(candidateRefund.enablePageCount !== undefined){
+		} else if(candidateRefund.enablePageCount !== undefined) {
 			pageCount = candidateRefund.enablePageCount;
 		} else {
 			pageCount = countAttachmentsPages(candidateAttachments);
 		}
 
-		let
-			value_per_sheet = candidateRefund.value_per_sheets;
-
-		if(candidateRefund.suggested_tax !== undefined && candidateRefund.suggested_tax > 0){
-			value_per_sheet += candidateRefund.suggested_tax;
-		}
-
-		copyRefundValue = (value_per_sheet || 0.2) * pageCount;
+		copyRefundValue = (candidateRefund.value_per_sheets || 0.2) * pageCount;
 	}
 
 	return copyRefundValue;
@@ -90,6 +84,57 @@ function getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candi
 
 
 
+function getHiringGeneralRefundTaxValue(hiring, candidateRefund) {
+	// not implemented yet.
+	return 0;
+}
+
+function getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
+	if(hiring) {
+		jobName = jobName || (hiring.job && hiring.job.name);
+		jobRefund = jobRefund || (hiring.job && hiring.job.refund);
+
+		var candidate = getCorrespondentFromCandidates(hiring.candidates);
+		candidateRefund = candidateRefund || (candidate && candidate.refund);
+		candidateAttachments = candidateAttachments || (candidate && candidate.attachments);
+	}
+
+	// copy refund value (in case of copy services).
+	var copyRefundValue = 0;
+	if(jobName === 'Cópia' && jobRefund && jobRefund.pay_sheets) {
+		var pageCount = 0;
+		if(candidateRefund.pageCount !== undefined) {
+			pageCount = candidateRefund.pageCount;
+		} else if(candidateRefund.enablePageCount !== undefined) {
+			pageCount = candidateRefund.enablePageCount;
+		} else {
+			pageCount = countAttachmentsPages(candidateAttachments);
+		}
+
+		if(candidateRefund.suggested_tax !== undefined && candidateRefund.suggested_tax > 0) {
+			var value_per_sheet = candidateRefund.suggested_tax;
+
+			copyRefundValue = (value_per_sheet || 0.0) * pageCount;
+		}
+	}
+
+	return copyRefundValue;
+}
+
+function getHiringRefundTaxValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
+	return getHiringGeneralRefundTaxValue(hiring, candidateRefund) +
+		getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments);
+}
+
+
+
+function getHiringRefundValueWithTax(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
+	return getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) +
+		getHiringRefundTaxValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments);
+}
+
+
+
 function getHiringTotalValue(hiring, hiringValue, jobName, jobRefund, candidateRefund, candidateAttachments) {
 	return getHiringValue(hiring, hiringValue) +
 		getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments);
@@ -97,7 +142,7 @@ function getHiringTotalValue(hiring, hiringValue, jobName, jobRefund, candidateR
 
 function getHiringTotalValueWithTax(hiring, hiringValue, hiringTaxValue, jobName, jobRefund, candidateRefund, candidateAttachments) {
 	return getHiringValueWithTax(hiring, hiringValue, hiringTaxValue) +
-		getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments);
+		getHiringRefundValueWithTax(hiring, jobName, jobRefund, candidateRefund, candidateAttachments);
 }
 
 
@@ -129,6 +174,10 @@ module.exports = {
 	getHiringGeneralRefundValue: getHiringGeneralRefundValue,
 	getHiringCopyRefundValue:    getHiringCopyRefundValue,
 	getHiringRefundValue:        getHiringRefundValue,
+
+	getHiringGeneralRefundTaxValue: getHiringGeneralRefundTaxValue,
+	getHiringCopyRefundTaxValue:    getHiringCopyRefundTaxValue,
+	getHiringRefundTaxValue:        getHiringRefundTaxValue,
 
 	getHiringTotalValue:        getHiringTotalValue,
 	getHiringTotalValueWithTax: getHiringTotalValueWithTax,
