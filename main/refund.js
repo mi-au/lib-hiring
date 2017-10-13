@@ -42,7 +42,7 @@ function getHiringValueWithTax(hiring, hiringValue, hiringTaxValue) {
 
 function getHiringGeneralRefundValue(hiring, candidateRefund) {
 	if(hiring) {
-		var candidate = getCorrespondentFromCandidates(hiring.candidates);
+		var candidate = getCorrespondentFromHiring(hiring);
 		candidateRefund = candidateRefund || (candidate && candidate.refund);
 	}
 
@@ -54,7 +54,7 @@ function getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, c
 		jobName = jobName || (hiring.job && hiring.job.name);
 		jobRefund = jobRefund || (hiring.job && hiring.job.refund);
 
-		var candidate = getCorrespondentFromCandidates(hiring.candidates);
+		var candidate = getCorrespondentFromHiring(hiring);
 		candidateRefund = candidateRefund || (candidate && candidate.refund);
 		candidateAttachments = candidateAttachments || (candidate && candidate.attachments);
 	}
@@ -94,7 +94,7 @@ function getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund
 		jobName = jobName || (hiring.job && hiring.job.name);
 		jobRefund = jobRefund || (hiring.job && hiring.job.refund);
 
-		var candidate = getCorrespondentFromCandidates(hiring.candidates);
+		var candidate = getCorrespondentFromHiring(hiring);
 		candidateRefund = candidateRefund || (candidate && candidate.refund);
 		candidateAttachments = candidateAttachments || (candidate && candidate.attachments);
 	}
@@ -149,12 +149,15 @@ function getHiringTotalValueWithTax(hiring, hiringValue, hiringTaxValue, jobName
 
 // Useful functions.
 
-function getCorrespondentFromCandidates(candidates) {
-	if(!Array.isArray(candidates)) {
-		return candidates;
+function getCorrespondentFromHiring(hiring) {
+	if (hiring._correspondent) {
+		return hiring._correspondent;
+	}
+	if(!Array.isArray(hiring.candidates)) {
+		return hiring.candidates;
 	}
 
-	return candidates.filter(function(candidate) {
+	return hiring.candidates.filter(function(candidate) {
 		return [ 'cancelled', 'rejected', 'notSent' ].indexOf(candidate.stage) === -1;
 	})[0];
 }
