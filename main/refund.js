@@ -40,6 +40,25 @@ function getHiringValueWithTax(hiring, hiringValue, hiringTaxValue) {
 
 
 
+// get paid value
+function getHiringPaidValue(hiring, payments) {
+	if(hiring) {
+		var candidate = getCorrespondentFromHiring(hiring);
+		payments = payments || (candidate && candidate.payments);
+	}
+
+	var paidValue = 0;
+	if(Array.isArray(payments)) {
+		payments.forEach(function(payment) {
+			paidValue += payment.value || 0;
+		});
+	}
+
+	return paidValue;
+}
+
+
+
 function getHiringGeneralRefundValue(hiring, candidateRefund) {
 	if(hiring) {
 		var candidate = getCorrespondentFromHiring(hiring);
@@ -101,7 +120,7 @@ function getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund
 
 	// copy refund value (in case of copy services).
 	var copyRefundValue = 0;
-	if(jobName === 'Cópia' && jobRefund && jobRefund.pay_sheets) {
+	if(jobName === 'Cópia' && !getHiringValue(hiring) && jobRefund && jobRefund.pay_sheets) {
 		var pageCount = 0;
 		if(candidateRefund.pageCount !== undefined) {
 			pageCount = candidateRefund.pageCount;
@@ -112,7 +131,7 @@ function getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund
 		}
 
 		if(candidateRefund.suggested_tax !== undefined && candidateRefund.suggested_tax > 0) {
-			var value_per_sheet = candidateRefund.suggested_tax;
+			var value_per_sheet = Math.max(0, candidateRefund.suggested_tax - (candidateRefund.value_per_sheets || 0.2));
 
 			copyRefundValue = (value_per_sheet || 0.0) * pageCount;
 		}
@@ -173,6 +192,8 @@ module.exports = {
 	getHiringValue:        getHiringValue,
 	getHiringTaxValue:     getHiringTaxValue,
 	getHiringValueWithTax: getHiringValueWithTax,
+
+	getHiringPaidValue: getHiringPaidValue,
 
 	getHiringGeneralRefundValue: getHiringGeneralRefundValue,
 	getHiringCopyRefundValue:    getHiringCopyRefundValue,
