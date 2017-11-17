@@ -131,7 +131,7 @@ function getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund
 		}
 
 		if(candidateRefund.suggested_tax !== undefined && candidateRefund.suggested_tax > 0) {
-			var value_per_sheet = Math.max(0, candidateRefund.suggested_tax - (candidateRefund.value_per_sheets || 0.2));
+			var value_per_sheet = candidateRefund.suggested_tax;
 
 			copyRefundValue = (value_per_sheet || 0.0) * pageCount;
 		}
