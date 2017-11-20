@@ -108,7 +108,7 @@ function getHiringGeneralRefundTaxValue(hiring, candidateRefund) {
 	return 0;
 }
 
-function getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
+function getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments, hiringValue) {
 	if(hiring) {
 		jobName = jobName || (hiring.job && hiring.job.name);
 		jobRefund = jobRefund || (hiring.job && hiring.job.refund);
@@ -120,7 +120,7 @@ function getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund
 
 	// copy refund value (in case of copy services).
 	var copyRefundValue = 0;
-	if(jobName === 'Cópia' && !getHiringValue(hiring) && jobRefund && jobRefund.pay_sheets) {
+	if(jobName === 'Cópia' && !getHiringValue(hiring, hiringValue) && jobRefund && jobRefund.pay_sheets) {
 		var pageCount = 0;
 		if(candidateRefund.pageCount !== undefined) {
 			pageCount = candidateRefund.pageCount;
@@ -140,16 +140,16 @@ function getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund
 	return copyRefundValue;
 }
 
-function getHiringRefundTaxValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
+function getHiringRefundTaxValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments, hiringValue) {
 	return getHiringGeneralRefundTaxValue(hiring, candidateRefund) +
-		getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments);
+		getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments, hiringValue);
 }
 
 
 
-function getHiringRefundValueWithTax(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
+function getHiringRefundValueWithTax(hiring, jobName, jobRefund, candidateRefund, candidateAttachments, hiringValue) {
 	return getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) +
-		getHiringRefundTaxValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments);
+		getHiringRefundTaxValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments, hiringValue);
 }
 
 
@@ -161,7 +161,7 @@ function getHiringTotalValue(hiring, hiringValue, jobName, jobRefund, candidateR
 
 function getHiringTotalValueWithTax(hiring, hiringValue, hiringTaxValue, jobName, jobRefund, candidateRefund, candidateAttachments) {
 	return getHiringValueWithTax(hiring, hiringValue, hiringTaxValue) +
-		getHiringRefundValueWithTax(hiring, jobName, jobRefund, candidateRefund, candidateAttachments);
+		getHiringRefundValueWithTax(hiring, jobName, jobRefund, candidateRefund, candidateAttachments, hiringValue);
 }
 
 
