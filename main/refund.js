@@ -90,7 +90,7 @@ function getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, c
 			pageCount = countAttachmentsPages(candidateAttachments);
 		}
 
-		copyRefundValue = (candidateRefund.value_per_sheets || 0.2) * pageCount;
+		copyRefundValue = (candidateRefund.value_per_sheets || 0) * pageCount;
 	}
 
 	return copyRefundValue;
@@ -169,7 +169,7 @@ function getHiringTotalValueWithTax(hiring, hiringValue, hiringTaxValue, jobName
 // Useful functions.
 
 function getCorrespondentFromHiring(hiring) {
-	if (hiring._correspondent) {
+	if(hiring._correspondent) {
 		return hiring._correspondent;
 	}
 	if(!Array.isArray(hiring.candidates)) {
