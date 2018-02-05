@@ -74,8 +74,8 @@ function getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, c
 		jobRefund = jobRefund || (hiring.job && hiring.job.refund);
 
 		var candidate = getCorrespondentFromHiring(hiring);
-		candidateRefund = candidateRefund || (candidate && candidate.refund);
-		candidateAttachments = candidateAttachments || (candidate && candidate.attachments);
+		candidateRefund = candidateRefund || (candidate && candidate.refund) || {};
+		candidateAttachments = candidateAttachments || (candidate && candidate.attachments) || [];
 	}
 
 	// copy refund value (in case of copy services).
@@ -114,8 +114,8 @@ function getHiringCopyRefundTaxValue(hiring, jobName, jobRefund, candidateRefund
 		jobRefund = jobRefund || (hiring.job && hiring.job.refund);
 
 		var candidate = getCorrespondentFromHiring(hiring);
-		candidateRefund = candidateRefund || (candidate && candidate.refund);
-		candidateAttachments = candidateAttachments || (candidate && candidate.attachments);
+		candidateRefund = candidateRefund || (candidate && candidate.refund) || {};
+		candidateAttachments = candidateAttachments || (candidate && candidate.attachments) || [];
 	}
 
 	// copy refund value (in case of copy services).
