@@ -40,7 +40,7 @@ function getHiringValueWithTax(hiring, hiringValue, hiringTaxValue) {
 
 
 
-// get paid value
+// get value paid to the correspondent
 function getHiringPaidValue(hiring, payments) {
 	if(hiring) {
 		var candidate = getCorrespondentFromHiring(hiring);
@@ -55,6 +55,24 @@ function getHiringPaidValue(hiring, payments) {
 	}
 
 	return paidValue;
+}
+
+
+
+// get value paid from the office
+function getHiringOfficePaidValue(hiring, payments) {
+	if(hiring) {
+		payments = payments || hiring.payments;
+	}
+
+	var officePaidValue = 0;
+	if(Array.isArray(payments)) {
+		payments.forEach(function(payment) {
+			officePaidValue += payment.value || 0;
+		});
+	}
+
+	return officePaidValue;
 }
 
 
@@ -193,7 +211,8 @@ module.exports = {
 	getHiringTaxValue:     getHiringTaxValue,
 	getHiringValueWithTax: getHiringValueWithTax,
 
-	getHiringPaidValue: getHiringPaidValue,
+	getHiringPaidValue:       getHiringPaidValue,
+	getHiringOfficePaidValue: getHiringOfficePaidValue,
 
 	getHiringGeneralRefundValue: getHiringGeneralRefundValue,
 	getHiringCopyRefundValue:    getHiringCopyRefundValue,
