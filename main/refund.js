@@ -77,13 +77,19 @@ function getHiringOfficePaidValue(hiring, payments) {
 
 
 
-function getHiringGeneralRefundValue(hiring, candidateRefund) {
+function getHiringGeneralRefundValue(hiring, jobRefund, candidateRefund) {
 	if(hiring) {
+		jobRefund = jobRefund || (hiring.job && hiring.job.refund);
+
 		var candidate = getCorrespondentFromHiring(hiring);
 		candidateRefund = candidateRefund || (candidate && candidate.refund);
 	}
 
-	return (candidateRefund && candidateRefund.value) || 0;
+	if(jobRefund && jobRefund.pay) {
+		return (candidateRefund && candidateRefund.value) || 0;
+	} else {
+		return 0;
+	}
 }
 
 function getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
@@ -115,7 +121,7 @@ function getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, c
 }
 
 function getHiringRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments) {
-	return getHiringGeneralRefundValue(hiring, candidateRefund) +
+	return getHiringGeneralRefundValue(hiring, jobRefund, candidateRefund) +
 		getHiringCopyRefundValue(hiring, jobName, jobRefund, candidateRefund, candidateAttachments);
 }
 
